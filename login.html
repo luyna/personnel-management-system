@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>登录</title>
+<link rel="stylesheet" type="text/css" href="ext3build/resources/css/ext-all.css" />
+<script type="text/javascript" src="ext3build/ext-base.js"></script>
+<script type="text/javascript" src="ext3build/ext-all.js"></script>
+<script type="text/javascript" src="ext3build/ext-lang-zh_CN.js"></script>
+
+
+
+ <script type="text/javascript">
+Ext.onReady(function(){
+  Ext.QuickTips.init();
+  Ext.form.Field.prototype.msgTarget='side';
+
+    var form = new Ext.form.FormPanel({
+        labelAlign: 'right',
+        labelWidth: 40,
+		width:350,
+		title:'用户您好',
+		buttonAlign:'center',
+        frame: true,
+        defaultType: 'textfield',
+        items: [{
+		    xtype:'fieldset',
+			title:'欢迎登录',
+			autoheight:true,
+			defaultType:'textfield',
+			items:[{
+                     fieldLabel: '用户ID',
+                      name: 'manageID',//用户ID，包括manager和普通user
+					  allowBlank:false,
+					  blankText:"用户ID不能为空"
+                    },{
+                      fieldLabel: '密码',
+                      name: 'password',
+                      inputType: 'password',
+					  allowBlank:false,
+					  blankText:"用户密码不能为空",
+					  minLength:5,minLengthText:'密码不能少于五位',
+					  maxLength:10,maxLengthText:'密码不能超过十位'
+           },{
+		      xtype:'radiogroup',
+			  id:'identity',
+			 // width:300,
+			  fieldLabel:'权限',
+			  //layout:'table',
+			  items:[{
+		       inputType:'radio',
+			   //columnWidth:.5,
+			   fieldLabel:'管理员',
+			   id:'manage',
+			   name:'identity',
+			   inputValue:'manage',
+			   value:'manage'//后台获取数据的标记
+			   //width:10
+		      },{
+		       inputType:'radio',
+			   fieldLabel:'员工',
+			 // columnWidth:.5,
+			   id:'employee',
+			   checked:true,
+			   inputValue:'employee',
+			   value:'employee',
+			   name:'identity'
+			  // width:10
+		      }]
+		   }]
+		}],
+		
+        buttons: [{
+            text:'确定',
+			type:'submit',
+			handler:function(){
+			   if(form.form.isValid()){
+			     // this.disabled=true;		   
+								   
+				  form.form.doAction('submit',{
+				   url:'loging.php',
+				   waitMsg:'正在登录中......',
+				   method:'post',
+				   params:'dosubmit=true',
+				   success:function(form,action){
+				               if(action.result.msg=='ok'){
+							      if(Ext.getCmp('identity').getValue().inputValue=='manage')
+								     window.location='main.php';
+								 else window.location='employee.php';
+							   }
+							  else {
+							      Ext.Msg.alert("登录失败","用户名或密码错误，请重新输入");
+								  form.reset();}
+				   },
+				   failure:function(form,action){
+					 if(action.failureType == Ext.form.Action.SERVER_INVALID)
+				     Ext.MessageBox.alert('登录失败','服务器出现错误，请稍后再试');
+					 form.reset();
+				   }
+				  })
+			   }
+			}
+        },{
+		    text:'重置',
+			handler:function(){
+			  form.getForm().reset();
+			}
+		}]
+    });
+	//设置窗口显示位置
+	var windowWidth=window.screen.availWidth;
+	var left=windowWidth/2-300/2;
+	var style='margin-top:200px;margin-left:'+left+'px;';
+	var el=Ext.get('form').applyStyles(style);
+    form.render(el);
+  
+});
+
+
+        </script>
+    </head>
+    <body background="images/main.jpg" >
+     
+      <div id="form" style="text-align:center; "></div>
+    </body>
+</html>
+
